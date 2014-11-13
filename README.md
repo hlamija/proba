@@ -90,4 +90,4 @@ Primjer XML eksporta:
 
 ## Detalji aplikacije
 Aplikativno rješenje može biti realizirano koristeći bilo koji framework i proizvoljnu referentnu arhitekturu, ali je pri realizaciji rješenja potrebno voditi računa o zahtjevu da konačno rješenje bude portabilno. Portabilnost u ovom kontekstu podrazumijeva mogućnost kopiranja rješenja na prenosni medij (CD, USB) i izvršavanje rješenja sa datog medija bez dodatnih instalacija i konfiguracija.
-Rješenje može (ali ne mora) biti naslonjeno na neko od popularnih runtime okruženja (Java Runtime .NET, Javascript, ...).
+Zbog navedenih razloga kao razvojno okruženje predlažemo korištenje **backbone.js** javascript biblioteke kao frameworka za razvoj SinglePage web aplikacija.
