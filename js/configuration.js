@@ -1,6 +1,6 @@
 $(function() {
 (function() {
-
+	
 	window.App = {
 		Models: {},
 		Collections: {},
@@ -13,6 +13,7 @@ $(function() {
 	
 	//Configuration Model
 	App.Models.Configuration = Backbone.Model.extend({
+		
 		defaults: function() {
 			return {
 				name: '',
@@ -20,11 +21,8 @@ $(function() {
 				version: ''
 				//parameter: ''
 			};
-		},
-		
-		validate: function(attrs) {
-			
 		}
+		
 	});
 	
 	//Configuration View
@@ -44,19 +42,40 @@ $(function() {
 		
 		createConf: function() {
 			
-			this.model.set({name: document.getElementById("name").value, description: document.getElementById("description").value, version: document.getElementById("version").value});
+			hideErrorMsgs();
 			
-			document.getElementById("for_preview").innerHTML = JSON.stringify(configuration);
-			document.getElementById("for_preview").disabled = true;
+			var nameRegex = /^[A-Za-z]+$/;
 			
-			var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration));
-			$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link');
+			var nameValue = document.getElementById("name").value;
+			var descriptionValue = document.getElementById("description").value;
+			var versionValue = document.getElementById("version").value;
 			
-			document.getElementById("ok").disabled = true;
-			document.getElementById("preview").disabled = true;
-			document.getElementById("name").disabled = true;
-			document.getElementById("description").disabled = true;
-			document.getElementById("version").disabled = true;
+			if (descriptionValue != ''  && versionValue != '' && nameRegex.test(nameValue)) {
+				this.model.set({name: nameValue, description: descriptionValue, version: versionValue});
+				
+				document.getElementById("for_preview").innerHTML = JSON.stringify(configuration);
+				document.getElementById("for_preview").disabled = true;
+				
+				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration));
+				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link');
+				
+				disableAll();
+				
+			}
+			else {
+				if (nameValue == '') {
+					document.getElementById("error_msg_name1").style.display = 'inline';
+				}else if(!nameRegex.test(nameValue)) {
+					document.getElementById("error_msg_name2").style.display = 'inline';
+				}
+				
+				if (descriptionValue == '') {
+					document.getElementById("error_msg_description").style.display = 'inline';
+				}
+				if (versionValue == '') {
+					document.getElementById("error_msg_version").style.display = 'inline';
+				}
+			}
 		},
 		
 		showJSON: function() {
@@ -75,6 +94,21 @@ $(function() {
 			return this;
 		}
 	});
+	
+	var disableAll = function() {
+		document.getElementById("ok").disabled = true;
+		document.getElementById("preview").disabled = true;
+		document.getElementById("name").disabled = true;
+		document.getElementById("description").disabled = true;
+		document.getElementById("version").disabled = true;
+	};
+	
+	var hideErrorMsgs = function() {
+		document.getElementById("error_msg_name1").style.display = 'none';
+		document.getElementById("error_msg_name2").style.display = 'none';
+		document.getElementById("error_msg_description").style.display = 'none';
+		document.getElementById("error_msg_version").style.display = 'none';
+	};
 	
 	var configuration = new App.Models.Configuration();
 	var configurationView = new App.Views.ConfigurationView({model: configuration});
