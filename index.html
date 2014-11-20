@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>Configuration Management</title>
+	
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/simple-sidebar.css" rel="stylesheet">
-</head>
-<body>
 	
 	<script src="lib/underscore.js"></script>
     <script src="lib/jquery.js"></script>
     <script src="lib/backbone.js"></script>
 	
-	<script src="js/configuration.js"></script>
-    
-	<script id="configurationTemplate" type="text/template">
-		<div id="wrapper">
+	<script type="text/javascript" src="js/Backbone.View.js"></script>
+	<script type="text/javascript" src="js/ConfigurationModel.js"></script>
+	<script type="text/javascript" src="js/ConfigurationView.js"></script>
+	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
+	
+	
+</head>
+<body>
+    <div id="wrapper">
 			<div id="sidebar-wrapper">
 				<ul class="sidebar-nav">
 					<li class="sidebar-brand">
@@ -25,13 +32,24 @@
 						</a>
 					</li>
 					<li>
-						<a href="#">New Configuration</a>
+						<a href="#new_config">New Configuration</a>
 					</li>
 					<li>
-						<a href="#">Import Configuration</a>
+						<a href="#import_config">Import Configuration</a>
 					</li>
 				</ul>
 			</div>
+	</div>
+	<div class="container">
+		<div id="content" class="content">
+			<!-- Content div that is filled by the router -->
+		</div>
+	</div>
+	
+	<!--Templates-->
+	
+	<script id="configurationTemplate" type="text/template">
+		
 			<div id="page-content-wrapper">
 				<div class="container-fluid">
 					<div class="row">
@@ -90,8 +108,18 @@
 					</div>
 				</div>
 			</div>
-		</div>
     </script>
+	
+	<script id="importTemplate" type="text/template">
+	
+    </script>
+
+	<script type="text/javascript">
+		
+		var configurationView = new ConfigurationView({model: configuration});
+		var router = new ApplicationRouter($('#content'));
+		Backbone.history.start();
+	</script>
    
 	<script>
     $("#menu-toggle").click(function(e) {
@@ -99,5 +127,6 @@
         $("#wrapper").toggleClass("toggled");
     });
     </script>
+	
 </body>
 </html>
