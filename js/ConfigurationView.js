@@ -12,7 +12,9 @@
 		document.getElementById("error_msg_description").style.display = 'none';
 		document.getElementById("error_msg_version").style.display = 'none';
 	};
+	
 	var configuration = new Configuration();
+	
 	var ConfigurationView = Backbone.View.extend({
 		
 		events: {

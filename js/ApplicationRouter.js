@@ -1,39 +1,38 @@
-//Router
-	var ApplicationRouter = Backbone.Router.extend({
+var ApplicationRouter = Backbone.Router.extend({
 		
-		initialize: function(el) {
-			this.el = el;
-			
-			this.newConfigView = new ConfigurationView({template: '#configurationTemplate'});
-			this.importConfigView = new ConfigurationView({template: '#importTemplate'});
-		},
+	initialize: function(el) {
+		this.el = el;
 		
-		routes: {
-			"": 				"showNewConfig",
-			"new_config": 		"showNewConfig",
-			"import_config": 	"showImportConfig"
-		},
+		this.newConfigView = new ConfigurationView({template: '#newConfigurationTemplate'});
+		this.importConfigView = new ConfigurationView({template: '#importConfigurationTemplate'});
+	},
 		
-		currentView: null,
+	routes: {
+		"": 				"showNewConfig",
+		"new_config": 		"showNewConfig",
+		"import_config": 	"showImportConfig"
+	},
 		
-		switchView: function(view) {
-			if (this.currentView) {
-				this.currentView.remove();
-			}
-			this.el.html(view.el);
-			view.render();
-			this.currentView = view;
-		},
-	
-		showNewConfig: function() {
-			this.switchView(this.newConfigView);
-		},
+	currentView: null,
 		
-		showImportConfig: function() {
-			this.switchView(this.importConfigView);
+	switchView: function(view) {
+		if (this.currentView) {
+			this.currentView.remove();
 		}
+		this.el.html(view.el);
+		view.render();
+		this.currentView = view;
+	},
+	
+	showNewConfig: function() {
+		this.switchView(this.newConfigView);
+	},
 		
-	});
+	showImportConfig: function() {
+		this.switchView(this.importConfigView);
+	}
+		
+});
 	
 	
 	
