@@ -1,14 +1,11 @@
 var Configuration = Backbone.Model.extend({
+
+	defaults: function() {
+		return {
+			name: '',
+			description: '',
+			version: ''
+		};
+	}
 		
-		//url: 'C:/Users/Lamija/Desktop/configuration-mgmt/data/data.json',
-		
-		defaults: function() {
-			return {
-				name: '',
-				description: '',
-				version: ''
-				//parameter: ''
-			};
-		}
-		
-	});
+});

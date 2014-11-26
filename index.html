@@ -19,7 +19,6 @@
 	<script type="text/javascript" src="js/ConfigurationModel.js"></script>
 	<script type="text/javascript" src="js/ConfigurationView.js"></script>
 	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
-	<script type="text/javascript" src="js/ReadFileInput.js"></script>
 	
 </head>
 
@@ -68,10 +67,10 @@
 				<div class="col-sm-5">
 					<input type="text" class="form-control" id="name" placeholder="Enter name">
 				</div>
-				<p id="error_msg_name1" class="text-danger col-sm-2" style="display: none;">
+				<p id="error_msg_name1" class="text-danger col-sm-4 hiddenMsg">
 					Please, enter the name of the configuration.
 				</p>
-				<p id="error_msg_name2" class="text-danger col-sm-2" style="display: none;">
+				<p id="error_msg_name2" class="text-danger col-sm-4 hiddenMsg">
 					Please, enter correct name of the configuration.
 				</p>
 			</div>
@@ -80,7 +79,7 @@
 				<div class="col-sm-5">
 					<input type="text" class="form-control" id="description" placeholder="Enter description">
 				</div>
-				<p id="error_msg_description" class="text-danger col-sm-2" style="display: none;">
+				<p id="error_msg_description" class="text-danger col-sm-4 hiddenMsg">
 					Please, enter description of the configuration.
 				</p>
 			</div>
@@ -89,7 +88,7 @@
 				<div class="col-sm-5">
 					<input type="text" class="form-control" id="version" placeholder="Enter version">
 				</div>
-				<p id="error_msg_version" class="text-danger col-sm-2" style="display: none;">
+				<p id="error_msg_version" class="text-danger col-sm-4 hiddenMsg">
 					Please, enter version of the configuration.
 				</p>
 			</div>
@@ -103,10 +102,10 @@
 			<br>
 			<br>
 			<div class="form-group">
-				<label for="version" class="col-sm-2 control-label">Preview</label>
+				<label for="previewJSON" class="col-sm-2 control-label">Preview JSON</label>
 				<div class="col-sm-5">
-					<textarea class="form-control" id="for_preview" rows="3"></textarea>
-					<div id="for_download_link"></div>
+					<textarea class="form-control" id="for_preview_JSON" rows="3"></textarea>
+					<div id="for_download_link_JSON"></div>
 				</div>
 			</div>
 		</form>
@@ -137,10 +136,13 @@
 					<textarea class="form-control" id="previewFile" rows="23"></textarea>
 				</div>
 			</div>
+			<div class="form-group" id="for_button"></div>
 		</form>
     </script>
 
 	<script type="text/javascript">
+		var configuration = new Configuration();
+		var importedConfiguration = new Configuration();
 		var configurationView = new ConfigurationView({model: configuration});
 		var router = new ApplicationRouter($('#content'));
 		Backbone.history.start();

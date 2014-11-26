@@ -1,31 +1,42 @@
-	var disableAll = function() {
-		document.getElementById("ok").disabled = true;
-		document.getElementById("preview").disabled = true;
-		document.getElementById("name").disabled = true;
-		document.getElementById("description").disabled = true;
-		document.getElementById("version").disabled = true;
-	};
-	
-	var hideErrorMsgs = function() {
-		document.getElementById("error_msg_name1").style.display = 'none';
-		document.getElementById("error_msg_name2").style.display = 'none';
-		document.getElementById("error_msg_description").style.display = 'none';
-		document.getElementById("error_msg_version").style.display = 'none';
-	};
-	
-	var configuration = new Configuration();
-	
 	var ConfigurationView = Backbone.View.extend({
 		
 		events: {
 			'click #ok': 'createConf',
 			'click #cancel': 'cancelConf',
-			'click #preview': 'showJSON'
+			'click #preview': 'showJSON',
+			'click #readFile': 'readFile',
+			'click #update_conf': 'updateConf'
 		},
 		
-		remove: function() {
-			$(this.el).empty().detach();
-			return this;
+		updateConf: function() {
+			
+		},
+		
+		readFile: function() {
+		
+			var file = this.$('#fileInput')[0].files[0];
+			var textArea = this.$('#previewFile');
+			
+			if (!file) {
+				alert('Please select a file!');
+				return;
+			}
+				
+			var reader = new FileReader();
+
+			reader.onloadend = function(evt) {
+				if (evt.target.readyState == FileReader.DONE) {
+					
+					var fileContent = evt.target.result;
+					textArea.html(fileContent);
+					importedConfiguration = new Configuration(JSON.parse(fileContent));
+					
+					$('<div class="col-sm-offset-2 col-sm-10">\
+							<button type="button" class="btn btn-default btn-sm" id="update_conf">Update</button>').appendTo('#for_button');
+				}
+			};
+				
+			reader.readAsBinaryString(file);
 		},
 		
 		cancelConf: function() {
@@ -34,46 +45,63 @@
 		
 		createConf: function() {
 			
-			hideErrorMsgs();
+			var nameRegEx = /^[A-Za-z]+$/;
 			
-			var nameRegex = /^[A-Za-z]+$/;
+			this.$('p.hiddenMsg').hide();
 			
-			var nameValue = document.getElementById("name").value;
-			var descriptionValue = document.getElementById("description").value;
-			var versionValue = document.getElementById("version").value;
+			$textArea = this.$('#for_preview_JSON');
 			
-			if (descriptionValue != ''  && versionValue != '' && nameRegex.test(nameValue)) {
-				configuration.set({name: nameValue, description: descriptionValue, version: versionValue});
+			var nameValue = this.$('#name').val();
+			var descriptionValue = this.$('#description').val();
+			var versionValue = this.$('#version').val();
+			
+			if (descriptionValue != '' && versionValue != '' && nameRegEx.test(nameValue)) {
 				
-				document.getElementById("for_preview").innerHTML = JSON.stringify(configuration);
-				document.getElementById("for_preview").disabled = true;
+				configuration.set({
+					name: nameValue, 
+					description: descriptionValue, 
+					version: versionValue
+				});
+				
+				$textArea.html(JSON.stringify(configuration));
 				
 				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration));
-				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link');
+				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link_JSON');
 				
-				disableAll();
+				this.$('input.form-control, #ok, #preview, #for_preview_JSON').prop('disabled', true);
 				
-			}
-			else {
+			}else {
+				
 				if (nameValue == '') {
-					document.getElementById("error_msg_name1").style.display = 'inline';
-				}else if(!nameRegex.test(nameValue)) {
-					document.getElementById("error_msg_name2").style.display = 'inline';
+					this.$('#error_msg_name1').show();
+				}else if(!nameRegEx.test(nameValue)) {
+					this.$('#error_msg_name2').show();
 				}
 				
 				if (descriptionValue == '') {
-					document.getElementById("error_msg_description").style.display = 'inline';
+					this.$('#error_msg_description').show();
 				}
 				if (versionValue == '') {
-					document.getElementById("error_msg_version").style.display = 'inline';
+					this.$('#error_msg_version').show();
 				}
 			}
 		},
 		
 		showJSON: function() {
-			var preview_conf = new Configuration({name: document.getElementById("name").value, description: document.getElementById("description").value, version: document.getElementById("version").value});
-			document.getElementById("for_preview").innerHTML =JSON.stringify(preview_conf);
-			document.getElementById("for_preview").disabled = true;
+			
+			$nameEl = this.$('#name');
+			$descriptionEl = this.$('#description');
+			$versionEl = this.$('#version');
+			$textArea = this.$('#for_preview_JSON');
+			
+			var preview_conf = new Configuration({
+				name: $nameEl.val(), 
+				description: $descriptionEl.val(), 
+				version: $versionEl.val()
+			});
+			
+			$textArea.html(JSON.stringify(preview_conf));
+			$textArea.prop('disabled', true);
 		},
 		
 		initialize: function(options){
