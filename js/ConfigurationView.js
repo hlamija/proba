@@ -1,15 +1,65 @@
 	var ConfigurationView = Backbone.View.extend({
 		
 		events: {
-			'click #ok': 'createConf',
-			'click #cancel': 'cancelConf',
-			'click #preview': 'showJSON',
-			'click #readFile': 'readFile',
-			'click #update_conf': 'updateConf'
+			'click #ok': 				'createConf',
+			'click #cancel': 			'cancelConf',
+			//'click #preview': 			'showJSON',
+			'click #readFile': 			'readFile',
+			'click #add_parameter': 	'addParameter',
+			'click #new_param': 		'createParam'
 		},
 		
-		updateConf: function() {
+		createParam: function() {
 			
+			var nameRegEx = /^[A-Za-z]+$/;
+			
+			this.$('p.hiddenMsg').hide();
+			
+			var nameValue = this.$('#name_param').val();
+			var descriptionValue = this.$('#description_param').val();
+			var valueValue = this.$('#value_param').val();
+			
+			if (descriptionValue != '' && valueValue != '' && nameRegEx.test(nameValue)) {
+				
+				var parameter = new Parameter();
+				
+				parameter.set({
+					name: nameValue, 
+					value: valueValue,
+					description: descriptionValue
+				});
+				
+				parameterCollection.add(parameter);
+				
+				configuration.set({parameters: parameterCollection});
+				
+				this.$('#for_preview_JSON').html(JSON.stringify(configuration));
+								
+			}else {
+				if (nameValue == '') {
+					this.$('#error_msg_name3').show();
+				}else if(!nameRegEx.test(nameValue)) {
+					this.$('#error_msg_name4').show();
+				}
+				
+				if (descriptionValue == '') {
+					this.$('#error_msg_desc_param').show();
+				}
+				if (valueValue == '') {
+					this.$('#error_msg_value').show();
+				}
+			}
+			this.$('#name_param, #description_param, #value_param').val('');
+			this.$('#for_new_param').modal('hide');
+		},
+		
+		addParameter: function() {
+			var nameRegEx = /^[A-Za-z]+$/;
+			if (!nameRegEx.test(this.$('#name').val()) || this.$('#version').val() == '' || this.$('#description').val() == '') {
+				alert('Fields "Name", "Description" or "Value" are empty.');
+			}else{
+				this.$('#for_new_param').modal('show');
+			}			
 		},
 		
 		readFile: function() {
@@ -28,8 +78,8 @@
 				if (evt.target.readyState == FileReader.DONE) {
 					
 					var fileContent = evt.target.result;
-					textArea.html(fileContent);
 					importedConfiguration = new Configuration(JSON.parse(fileContent));
+					textArea.html(JSON.stringify(importedConfiguration));
 					
 					$('<div class="col-sm-offset-2 col-sm-10">\
 							<button type="button" class="btn btn-default btn-sm" id="update_conf">Update</button>').appendTo('#for_button');
@@ -87,7 +137,7 @@
 			}
 		},
 		
-		showJSON: function() {
+		/*showJSON: function() {
 			
 			$nameEl = this.$('#name');
 			$descriptionEl = this.$('#description');
@@ -102,7 +152,7 @@
 			
 			$textArea.html(JSON.stringify(preview_conf));
 			$textArea.prop('disabled', true);
-		},
+		},*/
 		
 		initialize: function(options){
 			this.template = options.template;

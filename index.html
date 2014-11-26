@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge" name="viewport" content="width=device-width, initial-scale=1">
 	
 	<title>Configuration Management</title>
-	
+
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/simple-sidebar.css" rel="stylesheet">
 	
 	<script type="text/javascript" src="lib/underscore.js"></script>
     <script type="text/javascript" src="lib/jquery.js"></script>
+	<script type="text/javascript" src="lib/bootstrap.min.js"></script>
 	<script type="text/javascript" src="lib/backbone.js"></script>
 	
 	<script type="text/javascript" src="js/Backbone.View.js"></script>
 	<script type="text/javascript" src="js/ConfigurationModel.js"></script>
 	<script type="text/javascript" src="js/ConfigurationView.js"></script>
 	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
-	
+	<script type="text/javascript" src="js/ParameterModel.js"></script>
+	<script type="text/javascript" src="js/ParameterCollection.js"></script>
 </head>
-
 <body>
     <div id="wrapper">
 		<div id="sidebar-wrapper">
@@ -57,6 +55,42 @@
 	<!--Templates-->
 	
 	<script id="newConfigurationTemplate" type="text/template">
+		<div id="for_new_param" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h4 class="modal-title">Add Parameter</h4>
+					</div>
+					<div class="modal-body">
+						<label for="name" class="col-sm-2 control-label">Name</label>
+						<input type="text" class="form-control" id="name_param" placeholder="Enter name">
+						<p id="error_msg_name3" class="text-danger col-sm-4 hiddenMsg">
+							Please, enter the name of the parameter.
+						</p>
+						<p id="error_msg_name4" class="text-danger col-sm-4 hiddenMsg">
+							Please, enter correct name of parameter.
+						</p>
+						<br>
+						<label for="value" class="col-sm-2 control-label">Value</label>
+						<input type="text" class="form-control" id="value_param" placeholder="Enter value">
+						<p id="error_msg_value" class="text-danger col-sm-4 hiddenMsg">
+							Please, enter value of the parameter.
+						</p>
+						<br>
+					    <label for="description" class="col-sm-2 control-label">Description</label>
+						<input type="text" class="form-control" id="description_param" placeholder="Enter description">
+						<p id="error_msg_desc_param" class="text-danger col-sm-4 hiddenMsg">
+							Please, enter description of the parameter.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-success btn-sm" id="new_param">Add</button>
+					</div>
+				</div>
+			</div>
+		</div>
 		<form class="form-horizontal" role="form">
 			<div class="form-group">
 				<h3 class="text-center">New Configuration</h3>
@@ -64,7 +98,7 @@
 			</div>
 			<div class="form-group">
 				<label for="name" class="col-sm-2 control-label">Name</label>
-				<div class="col-sm-5">
+				<div class="col-sm-6">
 					<input type="text" class="form-control" id="name" placeholder="Enter name">
 				</div>
 				<p id="error_msg_name1" class="text-danger col-sm-4 hiddenMsg">
@@ -76,7 +110,7 @@
 			</div>
 			<div class="form-group">
 				<label for="description" class="col-sm-2 control-label">Description</label>
-				<div class="col-sm-5">
+				<div class="col-sm-6">
 					<input type="text" class="form-control" id="description" placeholder="Enter description">
 				</div>
 				<p id="error_msg_description" class="text-danger col-sm-4 hiddenMsg">
@@ -85,7 +119,7 @@
 			</div>
 			<div class="form-group">
 				<label for="version" class="col-sm-2 control-label">Version</label>
-				<div class="col-sm-5">
+				<div class="col-sm-6">
 					<input type="text" class="form-control" id="version" placeholder="Enter version">
 				</div>
 				<p id="error_msg_version" class="text-danger col-sm-4 hiddenMsg">
@@ -94,16 +128,20 @@
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<button type="button" class="btn btn-default btn-sm" id="preview">Preview</button>
+					<a id="add_parameter" class="btn btn-default btn-sm" data-toggle="modal">Add parameter</a>
+				</div>					
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<!--<button type="button" class="btn btn-default btn-sm" id="preview">Preview</button>-->
 					<button type="button" class="btn btn-success btn-sm" id="ok">Submit</button>
 					<button type="button" class="btn btn-danger btn-sm" id="cancel">Cancel</button>
 				</div>
+			<br>
 			</div>
-			<br>
-			<br>
 			<div class="form-group">
 				<label for="previewJSON" class="col-sm-2 control-label">Preview JSON</label>
-				<div class="col-sm-5">
+				<div class="col-sm-6">
 					<textarea class="form-control" id="for_preview_JSON" rows="3"></textarea>
 					<div id="for_download_link_JSON"></div>
 				</div>
@@ -139,21 +177,21 @@
 			<div class="form-group" id="for_button"></div>
 		</form>
     </script>
-
+	
 	<script type="text/javascript">
 		var configuration = new Configuration();
 		var importedConfiguration = new Configuration();
+		var parameterCollection = new Parameters();
 		var configurationView = new ConfigurationView({model: configuration});
 		var router = new ApplicationRouter($('#content'));
 		Backbone.history.start();
 	</script>
-   
+	
 	<script>
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
     });
     </script>
-	
 </body>
 </html>
