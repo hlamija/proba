@@ -1,65 +1,108 @@
 	var ConfigurationView = Backbone.View.extend({
 		
 		events: {
-			'click #ok': 				'createConf',
-			'click #cancel': 			'cancelConf',
-			//'click #preview': 			'showJSON',
-			'click #readFile': 			'readFile',
-			'click #add_parameter': 	'addParameter',
-			'click #new_param': 		'createParam'
+			'click #ok': 					'createConf',
+			'click #cancel': 				'cancelConf',
+			'click #readFile': 				'readFile',
+			'click #create_parameter': 		'openCreateParam',
+			'click #new_param': 			'createParam',
+		//	'click #new_attr':				'createAttr',
+			'change #select_from_table': 	'toggleTable'
 		},
 		
+		toggleTable: function() {	
+			if (this.$('#select_from_table').is(':checked')) {
+				this.$('#table_in_modal').show();
+				this.$('#value_param').val('');
+				this.$('#value_param').prop('disabled', true);
+				
+			}else{
+				this.$('#table_in_modal').hide();
+				this.$('#value_param').prop('disabled', false);
+			}
+		},
+		
+		/*createAttr: function() {
+			var nameAttr = this.$('#name_attr').val();
+			var valueAttr = this.$('#value_attr').val();
+			
+			if (nameAttr != '' && valueAttr != ''){
+				parameter.set(nameAttr, valueAttr);
+				$('<label class="col-sm-5 control-label">' + nameAttr + '</label>\
+				<p>' + valueAttr + '</p><br>').appendTo('#append_attr');
+			}
+			this.$('#name_attr, #value_attr').val('');
+		},*/
+	
 		createParam: function() {
 			
-			var nameRegEx = /^[A-Za-z]+$/;
+			var parameter = new Parameter();
 			
-			this.$('p.hiddenMsg').hide();
+			var nameRegEx = /^[A-Za-z]+$/;
 			
 			var nameValue = this.$('#name_param').val();
 			var descriptionValue = this.$('#description_param').val();
 			var valueValue = this.$('#value_param').val();
+			$checkbox = this.$('#select_from_table');
 			
-			if (descriptionValue != '' && valueValue != '' && nameRegEx.test(nameValue)) {
-				
-				var parameter = new Parameter();
+			if (descriptionValue != '' && valueValue != '' && nameRegEx.test(nameValue) && !($checkbox.is(':checked'))) {
 				
 				parameter.set({
 					name: nameValue, 
 					value: valueValue,
 					description: descriptionValue
+				});		
+				
+				tempParamColl.add(parameter);
+				
+				var html1 = '<tr><td>' + parameter.get('name') + '</td><td>' + parameter.get('value') + '</td><td>'
+									   + parameter.get('description') +  '</td><td><input type="checkbox" value="" class="checkboxes"></td></tr>';
+				$('#for_parameters2 tr').first().after(html1);
+				
+				var html2 = '<tr><td>' + parameter.get('name') + '</td><td>' + parameter.get('value') + '</td><td>' 
+				                       + parameter.get('description') +  '</td><td><input type="radio" name="select_parameter" class="optionsRadios"></td></tr>';
+				$('#for_parameters1 tr').first().after(html2);
+				
+			}
+			else if (descriptionValue != '' && nameRegEx.test(nameValue) && $checkbox.is(':checked')) {
+				
+				var complexValue = null;
+				
+				$('tr .optionsRadios:checked').each(function() {
+					var num = $(this).closest('tr').index();
+					complexValue = tempParamColl.at(tempParamColl.length - num);
 				});
 				
-				parameterCollection.add(parameter);
+				parameter.set({
+					name: nameValue,
+					value: complexValue,
+					description: descriptionValue
+				});
 				
-				configuration.set({parameters: parameterCollection});
+				tempParamColl.add(parameter);
 				
-				this.$('#for_preview_JSON').html(JSON.stringify(configuration));
-								
-			}else {
-				if (nameValue == '') {
-					this.$('#error_msg_name3').show();
-				}else if(!nameRegEx.test(nameValue)) {
-					this.$('#error_msg_name4').show();
-				}
+				var html1 = '<tr><td>' + parameter.get('name') + '</td><td>' + JSON.stringify(parameter.get('value')) + '</td><td>'
+									   + parameter.get('description') +  '</td><td><input type="checkbox" value="" class="checkboxes"></td></tr>';
+				$('#for_parameters2 tr').first().after(html1);
 				
-				if (descriptionValue == '') {
-					this.$('#error_msg_desc_param').show();
-				}
-				if (valueValue == '') {
-					this.$('#error_msg_value').show();
-				}
+				var html2 = '<tr><td>' + parameter.get('name') + '</td><td>' + JSON.stringify(parameter.get('value')) + '</td><td>' 
+				                       + parameter.get('description') +  '</td><td><input type="radio" name="select_parameter" class="optionsRadios"></td></tr>';
+				$('#for_parameters1 tr').first().after(html2);
+				
 			}
+			else {
+				alert('Incorrect name, description or value.');
+			}
+			
 			this.$('#name_param, #description_param, #value_param').val('');
 			this.$('#for_new_param').modal('hide');
 		},
 		
-		addParameter: function() {
-			var nameRegEx = /^[A-Za-z]+$/;
-			if (!nameRegEx.test(this.$('#name').val()) || this.$('#version').val() == '' || this.$('#description').val() == '') {
-				alert('Fields "Name", "Description" or "Value" are empty.');
-			}else{
-				this.$('#for_new_param').modal('show');
-			}			
+		openCreateParam: function() {
+			this.$('#for_new_param').modal('show');
+			this.$('#table_in_modal').hide();
+			this.$('#select_from_table').prop('checked', false);
+			this.$('input[name=select_parameter]').prop('checked', false);
 		},
 		
 		readFile: function() {
@@ -100,17 +143,22 @@
 			this.$('p.hiddenMsg').hide();
 			
 			$textArea = this.$('#for_preview_JSON');
-			
 			var nameValue = this.$('#name').val();
 			var descriptionValue = this.$('#description').val();
 			var versionValue = this.$('#version').val();
 			
 			if (descriptionValue != '' && versionValue != '' && nameRegEx.test(nameValue)) {
 				
+				$('tr .checkboxes:checked').each(function() {
+					var num = $(this).closest('tr').index();
+					parameterCollection.push(tempParamColl.at(tempParamColl.length - num));
+				});
+				
 				configuration.set({
 					name: nameValue, 
 					description: descriptionValue, 
-					version: versionValue
+					version: versionValue,
+					parameters: parameterCollection
 				});
 				
 				$textArea.html(JSON.stringify(configuration));
@@ -136,23 +184,6 @@
 				}
 			}
 		},
-		
-		/*showJSON: function() {
-			
-			$nameEl = this.$('#name');
-			$descriptionEl = this.$('#description');
-			$versionEl = this.$('#version');
-			$textArea = this.$('#for_preview_JSON');
-			
-			var preview_conf = new Configuration({
-				name: $nameEl.val(), 
-				description: $descriptionEl.val(), 
-				version: $versionEl.val()
-			});
-			
-			$textArea.html(JSON.stringify(preview_conf));
-			$textArea.prop('disabled', true);
-		},*/
 		
 		initialize: function(options){
 			this.template = options.template;

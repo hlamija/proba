@@ -1,9 +1,9 @@
 var Parameter = Backbone.Model.extend({
-
+	
 	defaults: function() {
 		return {
 			name: 			'',
-			value: 			'',
+			value: 			'' || new Parameters(),
 			description: 	''
 		};
 	}

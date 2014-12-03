@@ -19,6 +19,7 @@
 	<script type="text/javascript" src="js/ApplicationRouter.js"></script>
 	<script type="text/javascript" src="js/ParameterModel.js"></script>
 	<script type="text/javascript" src="js/ParameterCollection.js"></script>
+	
 </head>
 <body>
     <div id="wrapper">
@@ -65,28 +66,60 @@
 					<div class="modal-body">
 						<label for="name" class="col-sm-2 control-label">Name</label>
 						<input type="text" class="form-control" id="name_param" placeholder="Enter name">
-						<p id="error_msg_name3" class="text-danger col-sm-4 hiddenMsg">
-							Please, enter the name of the parameter.
-						</p>
-						<p id="error_msg_name4" class="text-danger col-sm-4 hiddenMsg">
-							Please, enter correct name of parameter.
-						</p>
 						<br>
 						<label for="value" class="col-sm-2 control-label">Value</label>
 						<input type="text" class="form-control" id="value_param" placeholder="Enter value">
-						<p id="error_msg_value" class="text-danger col-sm-4 hiddenMsg">
-							Please, enter value of the parameter.
-						</p>
+						<br>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" id="select_from_table"> Or select parameter from table
+							</label>
+						</div>
+						<table class="table table-hover table-condensed" id="table_in_modal">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Value</th>
+									<th>Description</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="for_parameters1">
+								<tr></tr>
+							</tbody>
+						</table>
 						<br>
 					    <label for="description" class="col-sm-2 control-label">Description</label>
 						<input type="text" class="form-control" id="description_param" placeholder="Enter description">
-						<p id="error_msg_desc_param" class="text-danger col-sm-4 hiddenMsg">
-							Please, enter description of the parameter.
-						</p>
+						<br>
+						<div id="append_attr"></div>
+						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+						  <div class="panel panel-default">
+							<div class="panel-heading" role="tab" id="headingOne">
+							  <h4 class="panel-title">
+								<a data-toggle="collapse" data-parent="#accordion" href="#collapse" aria-expanded="true" aria-controls="collapse">
+								  Add custom attribute
+								</a>
+							  </h4>
+							</div>
+							<div id="collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+								<div class="panel-body">
+									<label for="name" class="col-sm-5 control-label">Name of the attribute</label>
+									<input type="text" class="form-control" id="name_attr" placeholder="Enter name">
+									<br>
+									<label for="value" class="col-sm-5 control-label">Value of the attribute</label>
+									<input type="text" class="form-control" id="value_attr" placeholder="Enter value">
+									<br>
+									<button type="button" class="btn btn-success btn-sm pull-right" id="new_attr">Add</button>
+									<button type="button" class="btn btn-default btn-sm pull-right">Cancel</button><!--$(".collapse").collapse();-->
+								</div>
+							</div>
+						  </div>
+						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-success btn-sm" id="new_param">Add</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-success" id="new_param">Submit</button>
 					</div>
 				</div>
 			</div>
@@ -127,15 +160,32 @@
 				</p>
 			</div>
 			<div class="form-group">
+				<label for="select_param" class="col-sm-2 control-label">Select parameter(s)</label>
+				<div class="col-sm-6">
+					<table class="table table-hover table-condensed">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Description</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody id="for_parameters2">
+							<tr></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<a id="add_parameter" class="btn btn-default btn-sm" data-toggle="modal">Add parameter</a>
+					<a id="create_parameter" class="btn btn-default btn-sm" data-toggle="modal">Create parameter</a>
 				</div>					
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<!--<button type="button" class="btn btn-default btn-sm" id="preview">Preview</button>-->
-					<button type="button" class="btn btn-success btn-sm" id="ok">Submit</button>
 					<button type="button" class="btn btn-danger btn-sm" id="cancel">Cancel</button>
+					<button type="button" class="btn btn-success btn-sm" id="ok">Submit</button>
 				</div>
 			<br>
 			</div>
@@ -180,8 +230,11 @@
 	
 	<script type="text/javascript">
 		var configuration = new Configuration();
-		var importedConfiguration = new Configuration();
+		var importedConfiguration = new Configuration();	
+		
 		var parameterCollection = new Parameters();
+		var tempParamColl = new Parameters();
+		
 		var configurationView = new ConfigurationView({model: configuration});
 		var router = new ApplicationRouter($('#content'));
 		Backbone.history.start();
