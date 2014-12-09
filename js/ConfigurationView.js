@@ -1,12 +1,12 @@
 	var ConfigurationView = Backbone.View.extend({
 		
 		events: {
-			'click #ok': 					'createConf',
-			'click #cancel': 				'cancelConf',
-			'click #readFile': 				'readFile',
-			'click #create_parameter': 		'openCreateParam',
-			'click #new_param': 			'createParam',
-		//	'click #new_attr':				'createAttr',
+			'click  #ok': 					'createConf',
+			'click  #cancel': 				'cancelConf',
+			'click  #readFile': 			'importAndUpdateConf',
+			'click  #create_parameter': 	'openCreateParam',
+			'click  #new_param': 			'createParam',
+			'click  #new_attr':				'createAttr',
 			'change #select_from_table': 	'toggleTable'
 		},
 		
@@ -22,17 +22,17 @@
 			}
 		},
 		
-		/*createAttr: function() {
+		createAttr: function() {
 			var nameAttr = this.$('#name_attr').val();
 			var valueAttr = this.$('#value_attr').val();
 			
 			if (nameAttr != '' && valueAttr != ''){
-				parameter.set(nameAttr, valueAttr);
+				attributes.push(nameAttr, valueAttr);
 				$('<label class="col-sm-5 control-label">' + nameAttr + '</label>\
 				<p>' + valueAttr + '</p><br>').appendTo('#append_attr');
 			}
 			this.$('#name_attr, #value_attr').val('');
-		},*/
+		},
 	
 		createParam: function() {
 			
@@ -53,6 +53,10 @@
 					description: descriptionValue
 				});		
 				
+				for (var i = 0; i < attributes.length; i = i+2) {
+					parameter.set(attributes[i], attributes[i+1]);
+				}
+				
 				tempParamColl.add(parameter);
 				
 				var html1 = '<tr><td>' + parameter.get('name') + '</td><td>' + parameter.get('value') + '</td><td>'
@@ -67,6 +71,10 @@
 			else if (descriptionValue != '' && nameRegEx.test(nameValue) && $checkbox.is(':checked')) {
 				
 				var complexValue = null;
+				
+				for (var i = 0; i < attributes.length; i = i+2) {
+					parameter.set(attributes[i], attributes[i+1]);
+				}
 				
 				$('tr .optionsRadios:checked').each(function() {
 					var num = $(this).closest('tr').index();
@@ -94,6 +102,8 @@
 				alert('Incorrect name, description or value.');
 			}
 			
+			attributes.length = 0;
+			this.$('#append_attr').empty();
 			this.$('#name_param, #description_param, #value_param').val('');
 			this.$('#for_new_param').modal('hide');
 		},
@@ -103,9 +113,10 @@
 			this.$('#table_in_modal').hide();
 			this.$('#select_from_table').prop('checked', false);
 			this.$('input[name=select_parameter]').prop('checked', false);
+			this.$('#value_param').prop('disabled', false);
 		},
 		
-		readFile: function() {
+		importAndUpdateConf: function() {
 		
 			var file = this.$('#fileInput')[0].files[0];
 			var textArea = this.$('#previewFile');
@@ -122,10 +133,28 @@
 					
 					var fileContent = evt.target.result;
 					importedConfiguration = new Configuration(JSON.parse(fileContent));
-					textArea.html(JSON.stringify(importedConfiguration));
+					textArea.html(JSON.stringify(importedConfiguration, null, 2));
 					
-					$('<div class="col-sm-offset-2 col-sm-10">\
-							<button type="button" class="btn btn-default btn-sm" id="update_conf">Update</button>').appendTo('#for_button');
+					var container = document.getElementById('for_update');
+					var options = {
+						editable: function (node) {
+							if (node.field == 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+								return {
+									field: false,
+									value: true
+								};
+							}
+							else return true;
+						}
+					};
+					var editor = new JSONEditor(container, options);
+					var json = importedConfiguration.toJSON();
+					editor.set(json);
+					var newJSON = editor.get();
+					var updatedConfiguration = new Configuration(newJSON);
+					
+					var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(updatedConfiguration, null, 2));
+					$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_update');	
 				}
 			};
 				
@@ -142,7 +171,6 @@
 			
 			this.$('p.hiddenMsg').hide();
 			
-			$textArea = this.$('#for_preview_JSON');
 			var nameValue = this.$('#name').val();
 			var descriptionValue = this.$('#description').val();
 			var versionValue = this.$('#version').val();
@@ -161,12 +189,26 @@
 					parameters: parameterCollection
 				});
 				
-				$textArea.html(JSON.stringify(configuration));
+				var container = document.getElementById('for_download_link_JSON');
+				var options = {
+					editable: function (node) {
+						if (node.field == 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+							return {
+								field: false,
+								value: true
+							};
+						}
+						else return true;
+					}
+				};
+				var editor = new JSONEditor(container, options);
+				var json = configuration.toJSON();
+				editor.set(json);
 				
-				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration));
+				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
 				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link_JSON');
 				
-				this.$('input.form-control, #ok, #preview, #for_preview_JSON').prop('disabled', true);
+				this.$('input.form-control, #ok').prop('disabled', true);
 				
 			}else {
 				
