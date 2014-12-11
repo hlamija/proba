@@ -4,8 +4,7 @@ var Configuration = Backbone.Model.extend({
 		return {
 			name: 			'',
 			description: 	'',
-			version: 		'',
-			parameters: 	new Parameters()
+			version: 		''
 		};
 	}
 		

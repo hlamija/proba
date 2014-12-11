@@ -117,9 +117,10 @@
 		},
 		
 		importAndUpdateConf: function() {
-		
+			
+			this.$('#for_update').empty();
+			
 			var file = this.$('#fileInput')[0].files[0];
-			var textArea = this.$('#previewFile');
 			
 			if (!file) {
 				alert('Please select a file!');
@@ -133,12 +134,11 @@
 					
 					var fileContent = evt.target.result;
 					importedConfiguration = new Configuration(JSON.parse(fileContent));
-					textArea.html(JSON.stringify(importedConfiguration, null, 2));
 					
 					var container = document.getElementById('for_update');
 					var options = {
 						editable: function (node) {
-							if (node.field == 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+							if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
 								return {
 									field: false,
 									value: true
@@ -150,6 +150,7 @@
 					var editor = new JSONEditor(container, options);
 					var json = importedConfiguration.toJSON();
 					editor.set(json);
+					
 					var newJSON = editor.get();
 					var updatedConfiguration = new Configuration(newJSON);
 					
@@ -182,17 +183,25 @@
 					parameterCollection.push(tempParamColl.at(tempParamColl.length - num));
 				});
 				
-				configuration.set({
-					name: nameValue, 
-					description: descriptionValue, 
-					version: versionValue,
-					parameters: parameterCollection
-				});
+				if (parameterCollection.length > 0) {
+					configuration.set({
+						name: nameValue, 
+						description: descriptionValue, 
+						version: versionValue,
+						parameters: parameterCollection
+					});
+				}else {
+					configuration.set({
+						name: nameValue,
+						description: descriptionValue,
+						version: versionValue
+					});
+				}
 				
 				var container = document.getElementById('for_download_link_JSON');
 				var options = {
 					editable: function (node) {
-						if (node.field == 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+						if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
 							return {
 								field: false,
 								value: true
@@ -201,10 +210,12 @@
 						else return true;
 					}
 				};
-				var editor = new JSONEditor(container, options);
-				var json = configuration.toJSON();
-				editor.set(json);
 				
+				var string = JSON.stringify(configuration);
+				alert(string);
+				var editor = new JSONEditor(container, options);
+				var json = JSON.parse(string);
+				editor.set(json);
 				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
 				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link_JSON');
 				
