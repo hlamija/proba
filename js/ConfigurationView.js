@@ -1,13 +1,30 @@
 	var ConfigurationView = Backbone.View.extend({
 		
+		editor: null,
+		
 		events: {
 			'click  #ok': 					'createConf',
-			'click  #cancel': 				'cancelConf',
-			'click  #readFile': 			'importAndUpdateConf',
+			'click  .cancel_button': 		'cancelConf',
+			'click  #read_file': 			'importAndUpdateConf',
 			'click  #create_parameter': 	'openCreateParam',
 			'click  #new_param': 			'createParam',
 			'click  #new_attr':				'createAttr',
-			'change #select_from_table': 	'toggleTable'
+			'change #select_from_table': 	'toggleTable',
+			'click  #save_updated_conf':    'saveUpdatedConf'
+		},
+		
+		saveUpdatedConf: function() {
+			this.$('#download_update').empty();
+			var newJSON = editor.get();
+			var updatedConfiguration = new Configuration(newJSON, {validate: true});
+			alert(JSON.stringify(updatedConfiguration, null, 2));
+			
+			if (JSON.stringify(updatedConfiguration) === '{}'){ 
+				alert('Updated configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
+			} else { 
+				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(updatedConfiguration, null, 2));
+				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#download_update'); 
+			}
 		},
 		
 		toggleTable: function() {	
@@ -15,7 +32,6 @@
 				this.$('#table_in_modal').show();
 				this.$('#value_param').val('');
 				this.$('#value_param').prop('disabled', true);
-				
 			}else{
 				this.$('#table_in_modal').hide();
 				this.$('#value_param').prop('disabled', false);
@@ -36,22 +52,25 @@
 	
 		createParam: function() {
 			
-			var parameter = new Parameter();
-			
-			var nameRegEx = /^[A-Za-z]+$/;
-			
 			var nameValue = this.$('#name_param').val();
 			var descriptionValue = this.$('#description_param').val();
 			var valueValue = this.$('#value_param').val();
-			$checkbox = this.$('#select_from_table');
 			
-			if (descriptionValue != '' && valueValue != '' && nameRegEx.test(nameValue) && !($checkbox.is(':checked'))) {
+			var parameter = new Parameter();
+			
+			parameter.on('error', function(model, error) {
+				alert(error);
+			});
+			
+			if (!(this.$('#select_from_table').is(':checked'))) {
 				
 				parameter.set({
 					name: nameValue, 
 					value: valueValue,
 					description: descriptionValue
-				});		
+				}, {
+					validate: true
+				});
 				
 				for (var i = 0; i < attributes.length; i = i+2) {
 					parameter.set(attributes[i], attributes[i+1]);
@@ -68,7 +87,7 @@
 				$('#for_parameters1 tr').first().after(html2);
 				
 			}
-			else if (descriptionValue != '' && nameRegEx.test(nameValue) && $checkbox.is(':checked')) {
+			else {
 				
 				var complexValue = null;
 				
@@ -85,6 +104,8 @@
 					name: nameValue,
 					value: complexValue,
 					description: descriptionValue
+				}, {
+					validate: true
 				});
 				
 				tempParamColl.add(parameter);
@@ -97,9 +118,6 @@
 				                       + parameter.get('description') +  '</td><td><input type="radio" name="select_parameter" class="optionsRadios"></td></tr>';
 				$('#for_parameters1 tr').first().after(html2);
 				
-			}
-			else {
-				alert('Incorrect name, description or value.');
 			}
 			
 			attributes.length = 0;
@@ -118,7 +136,9 @@
 		
 		importAndUpdateConf: function() {
 			
+			this.$('#for_buttons').empty();
 			this.$('#for_update').empty();
+			this.$('#download_update').empty();
 			
 			var file = this.$('#fileInput')[0].files[0];
 			
@@ -147,15 +167,12 @@
 							else return true;
 						}
 					};
-					var editor = new JSONEditor(container, options);
+					editor = new JSONEditor(container, options);
 					var json = importedConfiguration.toJSON();
 					editor.set(json);
 					
-					var newJSON = editor.get();
-					var updatedConfiguration = new Configuration(newJSON);
-					
-					var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(updatedConfiguration, null, 2));
-					$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_update');	
+					$('<button type="button" class="btn btn-danger btn-sm cancel_button">Cancel</button>\
+					   <button type="button" class="btn btn-primary btn-sm" id="save_updated_conf">Save</button>').appendTo('#for_buttons');	
 				}
 			};
 				
@@ -168,74 +185,61 @@
 		
 		createConf: function() {
 			
-			var nameRegEx = /^[A-Za-z]+$/;
-			
 			this.$('p.hiddenMsg').hide();
 			
 			var nameValue = this.$('#name').val();
 			var descriptionValue = this.$('#description').val();
 			var versionValue = this.$('#version').val();
 			
-			if (descriptionValue != '' && versionValue != '' && nameRegEx.test(nameValue)) {
-				
-				$('tr .checkboxes:checked').each(function() {
-					var num = $(this).closest('tr').index();
-					parameterCollection.push(tempParamColl.at(tempParamColl.length - num));
+			$('tr .checkboxes:checked').each(function() {
+				var num = $(this).closest('tr').index();
+				parameterCollection.push(tempParamColl.at(tempParamColl.length - num));
+			});
+			
+			configuration.on('error', function(model, error) {
+				alert(error);
+			});
+			
+			if (parameterCollection.length > 0) {
+				configuration.set({
+					name: nameValue, 
+					description: descriptionValue, 
+					version: versionValue,
+					parameters: parameterCollection
+				}, {
+					validate: true
 				});
-				
-				if (parameterCollection.length > 0) {
-					configuration.set({
-						name: nameValue, 
-						description: descriptionValue, 
-						version: versionValue,
-						parameters: parameterCollection
-					});
-				}else {
-					configuration.set({
-						name: nameValue,
-						description: descriptionValue,
-						version: versionValue
-					});
-				}
-				
-				var container = document.getElementById('for_download_link_JSON');
-				var options = {
-					editable: function (node) {
-						if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
-							return {
-								field: false,
-								value: true
-							};
-						}
-						else return true;
-					}
-				};
-				
-				var string = JSON.stringify(configuration);
-				alert(string);
-				var editor = new JSONEditor(container, options);
-				var json = JSON.parse(string);
-				editor.set(json);
-				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
-				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link_JSON');
-				
-				this.$('input.form-control, #ok').prop('disabled', true);
-				
 			}else {
-				
-				if (nameValue == '') {
-					this.$('#error_msg_name1').show();
-				}else if(!nameRegEx.test(nameValue)) {
-					this.$('#error_msg_name2').show();
-				}
-				
-				if (descriptionValue == '') {
-					this.$('#error_msg_description').show();
-				}
-				if (versionValue == '') {
-					this.$('#error_msg_version').show();
-				}
+				configuration.set({
+					name: nameValue,
+					description: descriptionValue,
+					version: versionValue
+				}, {
+					validate: true
+				});
 			}
+				
+			var container = document.getElementById('for_download_link_JSON');
+			var options = {
+				editable: function (node) {
+					if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+						return {
+							field: false,
+							value: true
+						};
+					}
+					else return true;
+				}
+			};
+			
+			var string = JSON.stringify(configuration);
+			var _editor = new JSONEditor(container, options);
+			var json = JSON.parse(string);
+			_editor.set(json);
+			var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
+			$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#for_download_link_JSON');
+				
+			this.$('input.form-control, #ok').prop('disabled', true);
 		},
 		
 		initialize: function(options){
