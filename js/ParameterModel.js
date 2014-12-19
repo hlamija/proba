@@ -9,22 +9,29 @@ var Parameter = Backbone.Model.extend({
 	
 	validate: function(attr, options) {
 		var nameRegEx = /^[A-Za-z]+$/;
-		var msg = '';
+		var errors = {};
+		errors.check = true;
 		
 		if (attr.name == '') {
-			msg += 'Please, enter the name of the configuration.';
+			errors.name = 'Please, enter the name of the configuration.';
+			errors.check = false;
 		}else if (!nameRegEx.test(attr.name)) {
-			msg += 'Please, enter correct name of the configuration.';
+			errors.name = 'Please, enter correct name of the configuration.';
+			errors.check = false;
 		}
 		
 		if (attr.description == '') {
-			msg += 'Please, enter description of the configuration.';
+			errors.description = 'Please, enter description of the configuration.';
+			errors.check = false;
 		}
 		if (attr.value == '' || attr.value == null) {
-			msg += 'Please, enter value of the configuration.';
+			errors.value = 'Please, enter value of the configuration.';
+			errors.check = false;
 		}
 		
-		return msg;
+		if (_.keys(errors).length > 1 && errors.check === false) {
+			return errors;
+		}
 	}
 		
 });

@@ -3,15 +3,17 @@
 		editor: null,
 		
 		events: {
-			'click  #new_config': 			'newConf',
-			'click  #save_new_conf':		'saveNewConf',
-			'click  .cancel_button': 		'cancelConf',
-			'click  #read_file': 			'importAndUpdateConf',
-			'click  #save_updated_conf':    'saveUpdatedConf'
+			'click #new_conf':   		  'newConf',
+			'click #save_new_conf':		  'saveNewConf',
+			'click .cancel_button': 	  'cancelConf',
+			'click #read_file': 		  'importAndUpdateConf',
+			'click #save_updated_conf':   'saveUpdatedConf'
 		},
 		
 		newConf: function() {
 			this.$('#for_new_conf').empty();
+			this.$('#buttons').empty();
+			
 			var container = document.getElementById('for_new_conf');
 			var options = {
 				editable: function (node) {
@@ -35,14 +37,18 @@
 		
 		saveNewConf: function() {
 			this.$('#link').empty();
-			var newJSON = editor.get();
-			var config = new Configuration(newJSON, {validate: true});
-			alert(JSON.stringify(config, null, 2));
 			
-			if (JSON.stringify(config) === '{}'){ 
+			var newJSON = editor.get();
+			
+			//Na ovaj nacin je omoguceno dodavanje nevalidnog parametra
+			//Izvrsi se validacija samo za Configuration, ne i za Parameter koji se dodaje u Collection
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! POPRAVITI
+			configuration = new Configuration(newJSON, {validate: true});
+			
+			if (JSON.stringify(configuration) === '{}'){ 
 				alert('Written configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
 			} else { 
-				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
 				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#link'); 
 			}
 		},
@@ -99,9 +105,13 @@
 		
 		saveUpdatedConf: function() {
 			this.$('#download_update').empty();
+			
 			var newJSON = editor.get();
+			
+			//Na ovaj nacin je omoguceno dodavanje nevalidnog parametra
+			//Izvrsi se validacija samo za Configuration, ne i za Parameter koji se dodaje u Collection
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! POPRAVITI
 			var updatedConfiguration = new Configuration(newJSON, {validate: true});
-			alert(JSON.stringify(updatedConfiguration, null, 2));
 			
 			if (JSON.stringify(updatedConfiguration) === '{}'){ 
 				alert('Updated configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
