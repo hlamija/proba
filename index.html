@@ -58,141 +58,24 @@
 	<!--Templates-->
 	
 	<script id="newConfigurationTemplate" type="text/template">
-		<div id="for_new_param" class="modal fade">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-						<h4 class="modal-title">Add Parameter</h4>
-					</div>
-					<div class="modal-body">
-						<label for="name" class="col-sm-2 control-label">Name</label>
-						<input type="text" class="form-control" id="name_param" placeholder="Enter name">
-						<br>
-						<label for="value" class="col-sm-2 control-label">Value</label>
-						<input type="text" class="form-control" id="value_param" placeholder="Enter value">
-						<br>
-						<div class="checkbox">
-							<label>
-								<input type="checkbox" id="select_from_table"> Or select parameter from table
-							</label>
-						</div>
-						<table class="table table-hover table-condensed" id="table_in_modal">
-							<thead>
-								<tr>
-									<th>Name</th>
-									<th>Value</th>
-									<th>Description</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody id="for_parameters1">
-								<tr></tr>
-							</tbody>
-						</table>
-						<br>
-					    <label for="description" class="col-sm-2 control-label">Description</label>
-						<input type="text" class="form-control" id="description_param" placeholder="Enter description">
-						<br>
-						<div id="append_attr"></div>
-						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-						  <div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="headingOne">
-							  <h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapse" aria-expanded="true" aria-controls="collapse">
-								  Add custom attribute
-								</a>
-							  </h4>
-							</div>
-							<div id="collapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-								<div class="panel-body">
-									<label for="name" class="col-sm-5 control-label">Name of the attribute</label>
-									<input type="text" class="form-control" id="name_attr" placeholder="Enter name">
-									<br>
-									<label for="value" class="col-sm-5 control-label">Value of the attribute</label>
-									<input type="text" class="form-control" id="value_attr" placeholder="Enter value">
-									<br>
-									<button type="button" class="btn btn-primary btn-sm pull-right" id="new_attr">Add</button>
-									<button type="button" class="btn btn-default btn-sm pull-right">Cancel</button>
-								</div>
-							</div>
-						  </div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary" id="new_param">Submit</button>
-					</div>
-				</div>
-			</div>
-		</div>
 		<form class="form-horizontal" role="form">
 			<div class="form-group">
 				<h3 class="text-center">New Configuration</h3>
 				<br>
 			</div>
 			<div class="form-group">
-				<label for="name" class="col-sm-2 control-label">Name</label>
-				<div class="col-sm-6">
-					<input type="text" class="form-control" id="name" placeholder="Enter name">
-				</div>
-				<p id="error_msg_name1" class="text-danger col-sm-4 hiddenMsg">
-					Please, enter the name of the configuration.
-				</p>
-				<p id="error_msg_name2" class="text-danger col-sm-4 hiddenMsg">
-					Please, enter correct name of the configuration.
-				</p>
-			</div>
-			<div class="form-group">
-				<label for="description" class="col-sm-2 control-label">Description</label>
-				<div class="col-sm-6">
-					<input type="text" class="form-control" id="description" placeholder="Enter description">
-				</div>
-				<p id="error_msg_description" class="text-danger col-sm-4 hiddenMsg">
-					Please, enter description of the configuration.
-				</p>
-			</div>
-			<div class="form-group">
-				<label for="version" class="col-sm-2 control-label">Version</label>
-				<div class="col-sm-6">
-					<input type="text" class="form-control" id="version" placeholder="Enter version">
-				</div>
-				<p id="error_msg_version" class="text-danger col-sm-4 hiddenMsg">
-					Please, enter version of the configuration.
-				</p>
-			</div>
-			<div class="form-group">
-				<label for="select_param" class="col-sm-2 control-label">Select parameter(s)</label>
-				<div class="col-sm-6">
-					<table class="table table-hover table-condensed">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Value</th>
-								<th>Description</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody id="for_parameters2">
-							<tr></tr>
-						</tbody>
-					</table>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="button" class="btn btn-primary btn-sm" id="new_config">New Configuration</button>
 				</div>
 			</div>
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-6">
-					<a id="create_parameter" class="btn btn-default btn-sm" data-toggle="modal">Create parameter</a>
-				</div>					
+				<div class="col-sm-offset-2 col-sm-10" id="for_new_conf"></div>
 			</div>
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-6">
-					<button type="button" class="btn btn-danger btn-sm cancel_button">Cancel</button>
-					<button type="button" class="btn btn-primary btn-sm" id="ok">Submit</button>
-				</div>
-			<br>
+				<div class="col-sm-offset-2 col-sm-10" id="buttons"></div>
 			</div>
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-6" id="for_download_link_JSON"></div>
+				<div class="col-sm-offset-2 col-sm-10" id="link"></div>  
 			</div>
 		</form>
     </script>
@@ -205,9 +88,9 @@
 			</div>
 			<div class="form-group">
 				<label for="fileInput" class="col-sm-2 control-label">File input</label>
-					<div class="col-sm-5">
-						<input type="file" id="fileInput" name="fileInput"/>
-					</div>
+				<div class="col-sm-5">
+					<input type="file" id="fileInput" name="fileInput"/>
+				</div>
 			</div>
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
@@ -230,14 +113,8 @@
     </script>
 	
 	<script type="text/javascript">
-		var attributes = new Array();
-		
-		var configuration = new Configuration();
 		var importedConfiguration = new Configuration();		
-		
-		var parameterCollection = new Parameters();
-		var tempParamColl = new Parameters();
-		
+		var configuration = new Configuration();
 		var configurationView = new ConfigurationView({model: configuration});
 		var router = new ApplicationRouter($('#content'));
 		Backbone.history.start();

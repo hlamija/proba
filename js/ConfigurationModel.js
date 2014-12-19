@@ -1,30 +1,41 @@
 var Configuration = Backbone.Model.extend({
+	
 	defaults: function() {
 		return {
 			name: 			'',
 			description: 	'',
 			version: 		''
-			//parameters:     new Parameters()
 		};
 	},
 	
-	validate: function(attr, options) {
+	validate: function(attr) {
 		var nameRegEx = /^[A-Za-z]+$/;
-		var msg = '';
+		var errors = {};
+		errors.check = true;
 		
 		if (attr.name == '') {
-			msg += 'Please, enter the name of the configuration.';
+			errors.name = 'Please, enter the name of the configuration.';
+			errors.check = false;
+			$('#error_msg_name1').show();
 		}else if (!nameRegEx.test(attr.name)) {
-			msg += 'Please, enter correct name of the configuration.';
+			errors.name = 'Please, enter correct name of the configuration.';
+			errors.check = false;
+			$('#error_msg_name2').show();
 		}
 		
 		if (attr.description == '') {
-			msg += 'Please, enter description of the configuration.';
+			errors.description = 'Please, enter description of the configuration.';
+			errors.check = false;
+			$('#error_msg_description').show();
 		}
 		if (attr.version == '') {
-			msg += 'Please, enter version of the configuration.';
+			errors.version = 'Please, enter version of the configuration.';
+			errors.check = false;
+			$('#error_msg_version').show();
 		}
 		
-		return msg;
+		if (_.keys(errors).length > 1 && errors.check === false) {
+			return errors;
+		}
 	}
 });
