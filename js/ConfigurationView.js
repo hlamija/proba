@@ -17,7 +17,7 @@
 			var container = document.getElementById('for_new_conf');
 			var options = {
 				editable: function (node) {
-					if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+					if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {
 						return {
 							field: false,
 							value: true
@@ -39,15 +39,17 @@
 			this.$('#link').empty();
 			
 			var newJSON = editor.get();
-			
-			//Na ovaj nacin je omoguceno dodavanje nevalidnog parametra
-			//Izvrsi se validacija samo za Configuration, ne i za Parameter koji se dodaje u Collection
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! POPRAVITI
 			configuration = new Configuration(newJSON, {validate: true});
-			
+			alert(JSON.stringify(configuration, null, 2));
 			if (JSON.stringify(configuration) === '{}'){ 
 				alert('Written configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
 			} else { 
+				/*// Save a JSON document
+				document.getElementById('saveDocument').onclick = function () {
+				var blob = new Blob([editor.getText()], {type: 'application/json;charset=utf-8'});
+				saveAs(blob, 'document.json');
+				GDJE JE saveDocument id buttona
+				};*/
 				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
 				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#link'); 
 			}
@@ -81,7 +83,7 @@
 					var container = document.getElementById('for_update');
 					var options = {
 						editable: function (node) {
-							if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value') {
+							if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {
 								return {
 									field: false,
 									value: true
@@ -108,9 +110,6 @@
 			
 			var newJSON = editor.get();
 			
-			//Na ovaj nacin je omoguceno dodavanje nevalidnog parametra
-			//Izvrsi se validacija samo za Configuration, ne i za Parameter koji se dodaje u Collection
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! POPRAVITI
 			var updatedConfiguration = new Configuration(newJSON, {validate: true});
 			
 			if (JSON.stringify(updatedConfiguration) === '{}'){ 
