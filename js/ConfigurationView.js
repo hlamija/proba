@@ -40,18 +40,15 @@
 			
 			var newJSON = editor.get();
 			configuration = new Configuration(newJSON, {validate: true});
-			alert(JSON.stringify(configuration, null, 2));
 			if (JSON.stringify(configuration) === '{}'){ 
 				alert('Written configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
-			} else { 
-				/*// Save a JSON document
-				document.getElementById('saveDocument').onclick = function () {
-				var blob = new Blob([editor.getText()], {type: 'application/json;charset=utf-8'});
-				saveAs(blob, 'document.json');
-				GDJE JE saveDocument id buttona
-				};*/
-				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
-				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#link'); 
+			} else {
+				var json = editor.get();
+				var xml = json2xml(json);
+				var dataj = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
+				$('<a href="data:' + dataj + '" download="configuration.json">download JSON file</a>').appendTo('#link');
+				var datax = "text/xml;charset=utf-8," + encodeURIComponent(xml);
+				$('<br><a href="data:' + datax + '" download="configuration.xml">download XML file</a>').appendTo('#link');
 			}
 		},
 		
@@ -115,8 +112,12 @@
 			if (JSON.stringify(updatedConfiguration) === '{}'){ 
 				alert('Updated configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
 			} else { 
-				var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(updatedConfiguration, null, 2));
-				$('<a href="data:' + data + '" download="data.json">download JSON</a>').appendTo('#download_update'); 
+				var json = editor.get();
+				var xml = json2xml(json);
+				var dataj = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(updatedConfiguration, null, 2));
+				$('<a href="data:' + dataj + '" download="configuration.json">download JSON file</a>').appendTo('#download_update'); 
+				var datax = "text/xml;charset=utf-8," + encodeURIComponent(xml);
+				$('<br><a href="data:' + datax + '" download="configuration.xml">download XML file</a>').appendTo('#download_update');
 			}
 		},
 		
