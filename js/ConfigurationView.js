@@ -73,39 +73,52 @@ var ConfigurationView = Backbone.View.extend({
 		var fileName = file.name;
 		var extension = fileName.substr((fileName.lastIndexOf('.') + 1));
 		
-		if (extension === 'xml') {
-				
-		}
-		else if (extension === 'json') {	
+		if (extension === 'xml' || extension === 'json') {
 			var reader = new FileReader();
-
-			reader.onloadend = function(evt) {
-				if (evt.target.readyState == FileReader.DONE) {
-					
-					var fileContent = evt.target.result;
-					importedConfiguration = new Configuration(JSON.parse(fileContent));
-					
-					var container = document.getElementById('for_update');
-					var options = {
-					editable: function (node) {
-							if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {
-								return {
-									field: false,
-									value: true
-								};
-							}
-							else return true;
-						},
-						mode: 'tree'
-					};
-					editor = new JSONEditor(container, options);
-					var json = importedConfiguration.toJSON();
-					editor.set(json);
-						
-					$('<button type="button" class="btn btn-danger btn-sm cancel_button">Cancel</button>\
-					   <button type="button" class="btn btn-primary btn-sm" id="save_updated_conf">Save</button>').appendTo('#for_buttons');	
-				}
+			
+			var container = document.getElementById('for_update');
+			var options = {
+				editable: function (node) {
+					if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {
+						return {
+							field: false,
+							value: true
+						};
+					}
+					else return true;
+				},
+				mode: 'tree'
 			};
+
+			if (extension === 'json') {
+				reader.onloadend = function(evt) {
+					if (evt.target.readyState == FileReader.DONE) {
+						
+						var fileContent = evt.target.result;
+						configuration = new Configuration(JSON.parse(fileContent));
+						
+						editor = new JSONEditor(container, options);
+						var json = configuration.toJSON();
+						editor.set(json);
+							
+						$('<button type="button" class="btn btn-danger btn-sm cancel_button">Cancel</button>\
+						   <button type="button" class="btn btn-primary btn-sm" id="save_updated_conf">Save</button>').appendTo('#for_buttons');	
+					}
+				};
+			}
+			
+			if (extension === 'xml') {
+				reader.onloadend = function(e) {
+					var rawData = reader.result;
+					var strjson = xml2json.fromStr(rawData, 'string');
+					//alert(strjson);
+					
+					//configuration = new Configuration(JSON.parse(strjson));	
+					editor = new JSONEditor(container, options);
+					//var json = configuration.toJSON();
+					editor.set(strjson);
+				};
+			}
 			
 			reader.readAsBinaryString(file);
 		}
