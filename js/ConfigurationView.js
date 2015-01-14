@@ -90,36 +90,38 @@ var ConfigurationView = Backbone.View.extend({
 				mode: 'tree'
 			};
 
+			editor = new JSONEditor(container, options);
+			
 			if (extension === 'json') {
 				reader.onloadend = function(evt) {
 					if (evt.target.readyState == FileReader.DONE) {
-						
 						var fileContent = evt.target.result;
-						configuration = new Configuration(JSON.parse(fileContent));
+						configuration = new Configuration(JSON.parse(fileContent));	
 						
-						editor = new JSONEditor(container, options);
 						var json = configuration.toJSON();
 						editor.set(json);
-							
+						
 						$('<button type="button" class="btn btn-danger btn-sm cancel_button">Cancel</button>\
-						   <button type="button" class="btn btn-primary btn-sm" id="save_updated_conf">Save</button>').appendTo('#for_buttons');	
+						   <button type="button" class="btn btn-primary btn-sm" id="save_updated_conf">Save</button>').appendTo('#for_buttons');
 					}
 				};
 			}
-			
 			if (extension === 'xml') {
-				reader.onloadend = function(e) {
-					var rawData = reader.result;
-					var strjson = xml2json.fromStr(rawData, 'string');
-					//alert(strjson);
-					
-					//configuration = new Configuration(JSON.parse(strjson));	
-					editor = new JSONEditor(container, options);
-					//var json = configuration.toJSON();
-					editor.set(strjson);
+				reader.onloadend = function(evt) {
+					if (evt.target.readyState == FileReader.DONE) {
+						var fileContent = evt.target.result;
+						var configjson = xml2json.fromStr(fileContent, 'string');
+						var sconfigjson = JSON.stringify(configjson);
+						configuration = new Configuration(JSON.parse(sconfigjson));	
+						
+						var json = configuration.toJSON();
+						editor.set(json);
+						
+						$('<button type="button" class="btn btn-danger btn-sm cancel_button">Cancel</button>\
+						   <button type="button" class="btn btn-primary btn-sm" id="save_updated_conf">Save</button>').appendTo('#for_buttons');
+					}
 				};
 			}
-			
 			reader.readAsBinaryString(file);
 		}
 		else {

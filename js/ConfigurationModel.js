@@ -10,7 +10,7 @@ var Configuration = Backbone.Model.extend({
 	},
 	
 	validate: function(attr) {
-		var nameRegEx = /^[A-Za-z]+$/;
+		/*var nameRegEx = /^[A-Za-z]+$/;
 		var errors = {};
 		var obj = attr;
 		
@@ -58,6 +58,6 @@ var Configuration = Backbone.Model.extend({
 		
 		if (_.keys(errors).length > 0) {
 			return errors;
-		}
+		}*/
 	}
 });
