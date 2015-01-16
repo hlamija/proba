@@ -1,3 +1,4 @@
+var editor = null;
 var options = {
 	editable: function (node) {
 		if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {

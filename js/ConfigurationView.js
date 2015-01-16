@@ -1,6 +1,6 @@
 var ConfigurationView = Backbone.View.extend({
 		
-	editor: null,
+	//editor: null,
 		
 	events: {
 		'click #new_conf':   		  'newConf',

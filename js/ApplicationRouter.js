@@ -15,12 +15,16 @@ var ApplicationRouter = Backbone.Router.extend({
 		
 	switchView: function(view) {
 		var r = true;
-		if (this.currentView) {
+		if (this.currentView && editor != null) {
 			r = confirm('If you have made recent changes, you may lose them by navigating away. \
-							Your configuration has not been saved.\n\nAre you sure you want to leave or reload this page?');
+							Your configuration has not been saved.\n\nAre you sure you want to leave this page?');
 			if (r == true) {
 				this.currentView.remove();
+				editor = null;
 			}
+		}
+		else if (this.currentView) {
+			this.currentView.remove();
 		}
 		if (r == true) {
 			this.el.html(view.el);
