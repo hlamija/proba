@@ -1,9 +1,5 @@
 function JSONtoXML(object) {
-	var prevName = '';
-	var prevObj = '';
-	var namePrevObj = '';
-	var name = '';
-	var xml = '';
+	var prevName = '', prevObj = '', namePrevObj = '', name = '', xml = '';
 	for (var prop in object) {
 		if (object.hasOwnProperty(prop)) {
 			prevName = object.name;

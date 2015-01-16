@@ -5127,7 +5127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (this.field === 'value') {
 			items.push({
-				text: 'Insert',
+				text: 'Insert parameter(s) as value',
 				title: 'Insert parameter(s) as value',
 				className: 'insert',
 				click: function() {
@@ -5148,7 +5148,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		  }
 	    if (this.field === 'version') {
 			items.push ({
-				text: 'Add parameter',
+				text: 'Insert parameter(s)',
 				title: 'Insert parameter(s)',
 				className: 'append',
 				click: function() {
@@ -5169,7 +5169,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		
 		  if ((this.parent.field !== 'Configuration')&&(this.field === 'name' || this.field === 'description' || this.field === 'version')) {
 			items.push({
-				text: 'Insert attribute',
+				text: 'Add attribute',
 				title: 'Insert custom attribute',
 				className: 'insert',
 				click: function () {
@@ -5179,7 +5179,7 @@ return /******/ (function(modules) { // webpackBootstrap
           }
 		  if (this.parent.field !== 'Configuration' && this.field === 'value') {
 			items.push({
-				text: 'Insert attribute',
+				text: 'Add attribute',
 				title: 'Insert custom attribute',
 				className: 'insert',
 				click: function () {

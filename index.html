@@ -13,10 +13,10 @@
     <script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript" src="lib/bootstrap.min.js"></script>
 	<script type="text/javascript" src="lib/backbone.js"></script>
-	<script type="text/javascript" src="lib/jsoneditor.js"></script>
-	<script type="text/javascript" src="lib/json2xml.js"></script>
-	<!--<script type="text/javascript" src="lib/xml2json.js"></script>-->
-	<script type="text/javascript" src="lib/xml22json.js"></script>
+	
+	<script type="text/javascript" src="scripts/jsoneditor.js"></script>
+	<script type="text/javascript" src="scripts/json2xml.js"></script>
+	<script type="text/javascript" src="scripts/xml2json.js"></script>
 	
 	<script type="text/javascript" src="js/Backbone.View.js"></script>
 	<script type="text/javascript" src="js/ConfigurationModel.js"></script>
@@ -59,7 +59,7 @@
 	</div>
 	
 	<!--Templates-->
-	
+	<!--New Configuration Template-->
 	<script id="newConfigurationTemplate" type="text/template">
 		<form class="form-horizontal" role="form">
 			<div class="form-group">
@@ -83,6 +83,7 @@
 		</form>
     </script>
 	
+	<!--Import and Update Configuration Template-->
 	<script id="importConfigurationTemplate" type="text/template">
 		<form class="form-horizontal" role="form">
 			<div class="form-group">
@@ -115,15 +116,7 @@
 		</form>
     </script>
 	
-	<script type="text/javascript">
-		var conf = new Configuration();
-		var params = new Parameters();
-		var complexValue = [];
-		var configuration = new Configuration();
-		var configurationView = new ConfigurationView({model: configuration});
-		var router = new ApplicationRouter($('#content'));
-		Backbone.history.start();
-	</script>
+	<script type="text/javascript" src="js/Variables.js"></script>
 	
 	<script>
     $("#menu-toggle").click(function(e) {

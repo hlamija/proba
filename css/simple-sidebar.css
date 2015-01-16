@@ -1,11 +1,3 @@
-.hiddenMsg {
-	display: none;
-}
-
-.showMsg {
-	display: inline;
-}
-
 #wrapper {
     padding-left: 0;
     -webkit-transition: all 0.5s ease;
@@ -66,7 +58,7 @@
 .sidebar-nav li a {
     display: block;
     text-decoration: none;
-    color: #999999;
+    color: #f7f2f2;
 }
 
 .sidebar-nav li a:hover {
@@ -87,7 +79,7 @@
 }
 
 .sidebar-nav > .sidebar-brand a {
-    color: #999999;
+    color: #f7f2f2;
 }
 
 .sidebar-nav > .sidebar-brand a:hover {

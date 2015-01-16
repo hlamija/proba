@@ -11,22 +11,9 @@ var ConfigurationView = Backbone.View.extend({
 	},
 
 	newConf: function() {
-		this.$('#for_new_conf').empty();
-		this.$('#buttons').empty();
+		this.$('#for_new_conf, #buttons, #link').empty();
 			
 		var container = document.getElementById('for_new_conf');
-		var options = {
-			editable: function (node) {
-				if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {
-					return {
-						field: false,
-						value: true
-					};
-				}
-				else return true;
-			},
-			mode: 'tree'
-		};
 		editor = new JSONEditor(container, options);
 		var json = {"name":"","description":"","version":""};
 		editor.set(json);
@@ -36,21 +23,7 @@ var ConfigurationView = Backbone.View.extend({
 	},
 		
 	saveNewConf: function() {
-		this.$('#link').empty();
-			
-		var newJSON = editor.get();
-		configuration = new Configuration(newJSON, {validate: true});
-		if (JSON.stringify(configuration) === '{}'){ 
-			alert('Written configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
-		} else {
-			var dataj = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
-			$('<a href="data:' + dataj + '" download="configuration.json">download JSON file</a>').appendTo('#link');
-				
-			var object = editor.get();
-			var xml = createXML(object);
-			var datax = "text/xml;charset=utf-8," + encodeURIComponent(xml);
-			$('<br><a href="data:' + datax + '" download="configuration.xml" id="create_xml">download XML file</a>').appendTo('#link');
-		}
+		saveConf('#link');
 	},
 		
 	cancelConf: function() {
@@ -58,10 +31,7 @@ var ConfigurationView = Backbone.View.extend({
 	},
 		
 	importAndUpdateConf: function() {
-			
-		this.$('#for_buttons').empty();
-		this.$('#for_update').empty();
-		this.$('#download_update').empty();
+		this.$('#for_buttons, #for_update, #download_update').empty();
 			
 		var file = this.$('#fileInput')[0].files[0];
 		
@@ -77,19 +47,6 @@ var ConfigurationView = Backbone.View.extend({
 			var reader = new FileReader();
 			
 			var container = document.getElementById('for_update');
-			var options = {
-				editable: function (node) {
-					if (node.field === 'name' || node.field === 'description' || node.field === 'version' || node.field === 'value' || node.field === 'parameters') {
-						return {
-							field: false,
-							value: true
-						};
-					}
-					else return true;
-				},
-				mode: 'tree'
-			};
-
 			editor = new JSONEditor(container, options);
 			
 			if (extension === 'json') {
@@ -106,7 +63,7 @@ var ConfigurationView = Backbone.View.extend({
 					}
 				};
 			}
-			if (extension === 'xml') {
+			else if (extension === 'xml') {
 				reader.onloadend = function(evt) {
 					if (evt.target.readyState == FileReader.DONE) {
 						var fileContent = evt.target.result;
@@ -125,27 +82,12 @@ var ConfigurationView = Backbone.View.extend({
 			reader.readAsBinaryString(file);
 		}
 		else {
-			alert('Type of file must be .xml or .json!');
+			alert('Type of file must be .xml or .json');
 		}
 	},
 		
 	saveUpdatedConf: function() {
-		this.$('#download_update').empty();
-		var newJSON = editor.get();
-		configuration = new Configuration(newJSON, {validate: true});
-			
-		if (JSON.stringify(configuration) === '{}'){ 
-			alert('Updated configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
-		} 
-		else { 
-			var dataj = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration, null, 2));
-			$('<a href="data:' + dataj + '" download="configuration.json">download JSON file</a>').appendTo('#download_update'); 
-			
-			var object = editor.get();
-			var xml = createXML(object);
-			var datax = "text/xml;charset=utf-8," + encodeURIComponent(xml);
-			$('<br><a href="data:' + datax + '" download="configuration.xml">download XML file</a>').appendTo('#download_update');
-		}
+		saveConf('#download_update');
 	},
 		
 	initialize: function(options){
@@ -158,3 +100,26 @@ var ConfigurationView = Backbone.View.extend({
 		return this;
 	}
 });
+
+function download(id, conf) {
+	var dataj = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(conf, null, 2));
+	$('<a href="data:' + dataj + '" download="configuration.json">download JSON file</a>').appendTo(id); 
+			
+	var object = editor.get();
+	var xml = createXML(object);
+	var datax = "text/xml;charset=utf-8," + encodeURIComponent(xml);
+	$('<br><a href="data:' + datax + '" download="configuration.xml">download XML file</a>').appendTo(id);
+}
+
+function saveConf(id) {
+	this.$(id).empty();
+	var newJSON = editor.get();
+	
+	configuration = new Configuration(newJSON, {validate: true});	
+	if (JSON.stringify(configuration) === '{}'){ 
+		alert('Updated configuration doesn\'t meet the requirements. Please, enter the correct form of the configuration.');
+	} 
+	else { 
+		download(id, configuration);
+	}
+}
