@@ -1,4 +1,4 @@
-TESTIC webhook
+TESTIC
 Configuration Management
 =======
 
