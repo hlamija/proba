@@ -1,4 +1,3 @@
-dfghjk
 Configuration Management
 =======
 
